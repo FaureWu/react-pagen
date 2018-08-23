@@ -33,7 +33,6 @@
     "autoprefixer": "^9.0.2",
     "babel-loader": "^8.0.0-beta",
     "babel-plugin-import": "^1.8.0",
-    "build-tools": "git+ssh://git@git.guoxiaomei.cn:2224/ecommerceweb/build-tools.git#v1.1.0",
     "chalk": "^2.4.1",
     "concurrently": "^3.6.1",
     "css-loader": "^1.0.0",
