@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="email=no">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
+    <title>DEMO</title>
+    <style>
+      .header {
+        font-size: 0.6rem;
+        font-weight: bold;
+        padding: 0.5rem 0;
+      }
+
+      .title {
+        font-size: 0.4rem;
+      }
+
+      .item {
+        font-size: 0.5rem;
+        padding: 0.1rem 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div class="header">该项目用于h5单页开发</div>
+      <div class="title">目前已经开发的单页面链接如下：</div>
+      <% htmlWebpackPlugin.options.PAGES.forEach(function(page) { %>
+        <div class="item">
+          <a href="<%= '/' + page.name + '/index.html'  %>">
+            <span><%= page.name %></span>
+          </a>
+        </div>
+      <% }) %>
+    </div>
+  </body>
+</html>

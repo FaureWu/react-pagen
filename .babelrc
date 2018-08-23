@@ -1,0 +1,16 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      { "loose": true, "targets": { "browsers": ["last 2 versions", "Firefox ESR", "not ie < 9", "iOS > 8", "Android >= 2"] } }
+    ],
+    "@babel/preset-react"
+  ],
+  "plugins": [
+    "@babel/plugin-transform-runtime",
+    ["import", { "libraryName": "antd", "libraryDirectory": "es", "style": true }, "antd"],
+    ["import", { "libraryName": "antd-mobile", "libraryDirectory": "es", "style": true }, "antd-mobile"],
+    ["@babel/plugin-proposal-class-properties", { "loose": true }],
+    "@babel/plugin-proposal-async-generator-functions"
+  ]
+}

@@ -1,0 +1,41 @@
+.overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  opacity: 0.37;
+  z-index: 10;
+  display: none;
+
+  &.show {
+    display: inline-block;
+  }
+}
+
+.modal {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background: #fff;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  z-index: 11;
+  min-height: 700px;
+  transition: 0.3s transform;
+  transform: translate3d(0, 100%, 0);
+
+  &.open {
+    transform: translate3d(0, 0, 0);
+  }
+
+  .header {
+    position: relative;
+    color: #787878;
+    text-align: right;
+    padding: 30px;
+    box-sizing: border-box;
+  }
+}
