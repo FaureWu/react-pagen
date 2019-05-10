@@ -1,0 +1,42 @@
+{
+  "extends": [
+    "airbnb",
+    "plugin:prettier/recommended"
+  ],
+  "parser": "babel-eslint",
+  "rules": {
+    "react/jsx-filename-extension": ["error", { "extensions": [".js", ".jsx"] }],
+    "import/prefer-default-export": 0,
+    "prettier/prettier": [
+      "error",
+      {
+        "printWidth": 80,
+        "singleQuote": true,
+        "trailingComma": "all",
+        "bracketSpacing": true,
+        "jsxBracketSameLine": false,
+        "parser": "babel",
+        "semi": false
+      }
+    ],
+    "react/jsx-one-expression-per-line": 0,
+    "jsx-a11y/click-events-have-key-events": 0,
+    "jsx-a11y/no-static-element-interactions": 0,
+    "react/button-has-type": 0,
+    "react/prop-types": 0,
+    "no-underscore-dangle": 0,
+    "jsx-a11y/no-autofocus": 0
+  },
+  "globals": {
+    "document": true,
+    "window": true,
+    "fetch": true
+  },
+  "settings": {
+    "import/resolver": {
+      "webpack": {
+        "config": "./config/webpack.eslint"
+      }
+    }
+  }
+}

@@ -1,13 +1,10 @@
 const webpack = require('webpack')
 const filesize = require('filesize')
-const config = require('../webpack.config')
+const config = require('../config/webpack.config')
+const utils = require('../config/utils')
 
-let build_env = 'prod'
-if (process.argv.length === 3) {
-  const [name, env] = process.argv[2].split('=')
-
-  if (name === 'BUILD_ENV') build_env = env
-}
+const params = utils.parseParams()
+let build_env = params.BUILD_ENV || 'prod'
 
 process.env.NODE_ENV = 'production'
 

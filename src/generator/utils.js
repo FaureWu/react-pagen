@@ -1,3 +1,5 @@
+export const noop = () => {}
+
 export const isArray = arr => arr instanceof Array
 
 export const isObject = obj =>
@@ -6,6 +8,10 @@ export const isObject = obj =>
 export const isBoolean = bool => typeof bool === 'boolean'
 
 export const isFunction = func => typeof func === 'function'
+
+export const isString = str => typeof str === 'string'
+
+export const isUndefined = undef => typeof undef === 'undefined'
 
 export const assert = (validate, message) => {
   if (
@@ -27,3 +33,7 @@ function createIsDom() {
 }
 
 export const isDom = createIsDom()
+
+export function isSupportProxy() {
+  return typeof Proxy === 'function'
+}

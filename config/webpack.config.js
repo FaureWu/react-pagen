@@ -2,28 +2,32 @@ const fs = require('fs')
 const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const utils = require('./config/utils')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const CompressionPlugin = require('compression-webpack-plugin')
+const utils = require('./utils')
 
 const pagesConfig = utils.readPages()
 const pagesEntry = utils.getPagesEntry(pagesConfig)
 
 module.exports = {
-  mode: 'development',
+  mode: 'production',
   entry: {
-    _hd: path.resolve(__dirname, 'src/generator/hd/index.js'),
+    _hd: path.resolve(__dirname, '../src/generator/hd/index.js'),
     ...pagesEntry,
   },
-  devtool: 'cheap-module-source-map',
+  devtool: 'none',
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: '[name]/[name].js',
-    publicPath: '/../',
+    path: path.resolve(__dirname, '../dist'),
+    filename: '[name]/[name].[chunkhash:8].js',
+    publicPath: '../',
   },
   resolve: {
     extensions: ['.js', '.jsx', '.json'],
     modules: [
-      path.join(__dirname, 'node_modules'),
-      path.join(__dirname, 'src'),
+      path.join(__dirname, '../node_modules'),
+      path.join(__dirname, '../src'),
     ],
   },
   module: {
@@ -31,22 +35,27 @@ module.exports = {
       {
         oneOf: [
           {
-            test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
+            test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.eot$/, /\.svg$/, /\.ttf$/, /\.woff$/],
             loader: require.resolve('url-loader'),
             options: {
               limit: 10000,
-              name: 'media/[name].[ext]',
+              name: 'media/[name].[hash:8].[ext]',
             },
           },
           {
             test: /\.(js|jsx)$/,
-            include: path.join(__dirname, 'src'),
+            include: path.join(__dirname, '../src'),
             loader: require.resolve('babel-loader'),
           },
           {
             test: /\.css$/,
             use: [
-              require.resolve('style-loader'),
+              {
+                loader: MiniCssExtractPlugin.loader,
+                options: {
+                  publicPath: '../',
+                },
+              },
               {
                 loader: require.resolve('css-loader'),
                 options: {
@@ -81,7 +90,12 @@ module.exports = {
             test: /\.less$/,
             exclude: /node_modules/,
             use: [
-              require.resolve('style-loader'),
+              {
+                loader: MiniCssExtractPlugin.loader,
+                options: {
+                  publicPath: '../',
+                },
+              },
               {
                 loader: require.resolve('css-loader'),
                 options: {
@@ -118,9 +132,14 @@ module.exports = {
           },
           {
             test: /\.less$/,
-            exclude: path.join(__dirname, 'src'),
+            exclude: path.join(__dirname, '../src'),
             use: [
-              require.resolve('style-loader'),
+              {
+                loader: MiniCssExtractPlugin.loader,
+                options: {
+                  publicPath: '../',
+                },
+              },
               {
                 loader: require.resolve('css-loader'),
                 options: {
@@ -163,21 +182,37 @@ module.exports = {
             exclude: [/\.(js|jsx)$/, /\.html$/, /\.json$/],
             loader: require.resolve('file-loader'),
             options: {
-              name: 'media/[name].[ext]',
+              name: 'media/[name].[hash:8].[ext]',
             },
           },
         ],
       },
     ],
   },
+  optimization: {
+    minimizer: [
+      new OptimizeCssAssetsPlugin({}),
+      new UglifyJsPlugin({
+        uglifyOptions: {
+          ecma: 6,
+          cache: true,
+          parallel: true
+        },
+      }),
+    ]
+  },
   plugins: [
+    new CompressionPlugin(),
+    new MiniCssExtractPlugin({
+      filename: '[name]/[name].[chunkhash:8].css',
+    }),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new HtmlWebpackPlugin({
       inject: true,
-      template: path.resolve(__dirname, 'src/pages/index.html'),
-      filename: path.resolve(`${__dirname}/dist`, 'index.html'),
-      chunks: ['_hd'],
+      template: path.resolve(__dirname, '../src/pages/index.html'),
+      filename: path.resolve(`${__dirname}/../dist`, 'index.html'),
       PAGES: pagesConfig,
+      chunks: ['_hd'],
     }),
   ].concat(
     pagesConfig.map(config => {
@@ -185,11 +220,18 @@ module.exports = {
         inject: true,
         template: config.document,
         filename: path.resolve(
-          `${__dirname}/dist/${config.name}`,
+          `${__dirname}/../dist/${config.name}`,
           'index.html',
         ),
         chunks: ['_hd', config.name],
       })
     }),
   ),
+  node: {
+    dgram: 'empty',
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty',
+    child_process: 'empty',
+  },
 }

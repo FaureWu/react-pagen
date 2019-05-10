@@ -2,29 +2,28 @@ const fs = require('fs')
 const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const utils = require('./config/utils')
+const utils = require('./utils')
 
-const pagesConfig = utils.readPages()
+const pagesConfig = utils.readPages(utils.parseParams().MATCH)
 const pagesEntry = utils.getPagesEntry(pagesConfig)
 
 module.exports = {
-  mode: 'production',
+  mode: 'development',
   entry: {
+    _hd: path.resolve(__dirname, '../src/generator/hd/index.js'),
     ...pagesEntry,
-    _hd: path.resolve(__dirname, 'src/generator/hd/index.js'),
   },
-  devtool: 'none',
+  devtool: 'cheap-module-source-map',
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: '[name]/[name].[chunkhash:8].js',
-    publicPath: '../',
+    path: path.resolve(__dirname, '../dist'),
+    filename: '[name]/[name].js',
+    publicPath: '/../',
   },
   resolve: {
     extensions: ['.js', '.jsx', '.json'],
     modules: [
-      path.join(__dirname, 'node_modules'),
-      path.join(__dirname, 'src'),
+      path.join(__dirname, '../node_modules'),
+      path.join(__dirname, '../src'),
     ],
   },
   module: {
@@ -32,27 +31,22 @@ module.exports = {
       {
         oneOf: [
           {
-            test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
+            test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.eot$/, /\.svg$/, /\.ttf$/, /\.woff$/],
             loader: require.resolve('url-loader'),
             options: {
               limit: 10000,
-              name: 'media/[name].[hash:8].[ext]',
+              name: 'media/[name].[ext]',
             },
           },
           {
             test: /\.(js|jsx)$/,
-            include: path.join(__dirname, 'src'),
+            include: path.join(__dirname, '../src'),
             loader: require.resolve('babel-loader'),
           },
           {
             test: /\.css$/,
             use: [
-              {
-                loader: MiniCssExtractPlugin.loader,
-                options: {
-                  publicPath: '../',
-                },
-              },
+              require.resolve('style-loader'),
               {
                 loader: require.resolve('css-loader'),
                 options: {
@@ -87,12 +81,7 @@ module.exports = {
             test: /\.less$/,
             exclude: /node_modules/,
             use: [
-              {
-                loader: MiniCssExtractPlugin.loader,
-                options: {
-                  publicPath: '../',
-                },
-              },
+              require.resolve('style-loader'),
               {
                 loader: require.resolve('css-loader'),
                 options: {
@@ -129,14 +118,9 @@ module.exports = {
           },
           {
             test: /\.less$/,
-            exclude: path.join(__dirname, 'src'),
+            exclude: path.join(__dirname, '../src'),
             use: [
-              {
-                loader: MiniCssExtractPlugin.loader,
-                options: {
-                  publicPath: '../',
-                },
-              },
+              require.resolve('style-loader'),
               {
                 loader: require.resolve('css-loader'),
                 options: {
@@ -179,7 +163,7 @@ module.exports = {
             exclude: [/\.(js|jsx)$/, /\.html$/, /\.json$/],
             loader: require.resolve('file-loader'),
             options: {
-              name: 'media/[name].[hash:8].[ext]',
+              name: 'media/[name].[ext]',
             },
           },
         ],
@@ -187,16 +171,14 @@ module.exports = {
     ],
   },
   plugins: [
-    new MiniCssExtractPlugin({
-      filename: '[name]/[name].[chunkhash:8].css',
-    }),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
       inject: true,
-      template: path.resolve(__dirname, 'src/pages/index.html'),
-      filename: path.resolve(`${__dirname}/dist`, 'index.html'),
-      PAGES: pagesConfig,
+      template: path.resolve(__dirname, '../src/pages/index.html'),
+      filename: path.resolve(`${__dirname}/../dist`, 'index.html'),
       chunks: ['_hd'],
+      PAGES: pagesConfig,
     }),
   ].concat(
     pagesConfig.map(config => {
@@ -204,18 +186,11 @@ module.exports = {
         inject: true,
         template: config.document,
         filename: path.resolve(
-          `${__dirname}/dist/${config.name}`,
+          `${__dirname}/../dist/${config.name}`,
           'index.html',
         ),
         chunks: ['_hd', config.name],
       })
     }),
   ),
-  node: {
-    dgram: 'empty',
-    fs: 'empty',
-    net: 'empty',
-    tls: 'empty',
-    child_process: 'empty',
-  },
 }
