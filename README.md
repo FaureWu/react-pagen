@@ -103,3 +103,14 @@ export default {
 ```
 
 编写完成后在需要使用的页面index.js文件中引入即可
+
+## 如何触发model方法
+
+```js
+import { dispatcher } from 'generator'
+
+dispatcher.demo.getInfo({})
+  .then(...)
+  .catch(...)
+  .finally(...)
+```
